@@ -59,7 +59,33 @@
         Console.SetCursorPosition(balresz, felsoresz);
         Console.WriteLine("+" + new string('-', width) + "+");
 
-        
+        for (int i = 0; i < opciok.Length; i++)
+        {
+            string padding = opciok[i].PadLeft((width / 2) + (opciok[i].Length / 2)).PadRight(width);
+
+            Console.SetCursorPosition(balresz, felsoresz + 1 + i);
+
+
+            if (i == selectedOption)
+            {
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
+            }
+
+            Console.WriteLine("|" + padding + "|");
+            Console.ResetColor();
+        }
+
+        Console.SetCursorPosition(balresz, felsoresz + menuHeight - 1);
+        Console.WriteLine("+" + new string('-', width) + "+");
+
+        if (!string.IsNullOrEmpty(kivalasztottSzoveg))
+        {
+            Console.SetCursorPosition(balresz, felsoresz + menuHeight + 1);
+            Console.WriteLine("Kiválasztott opció: " + kivalasztottSzoveg);
+        }
+
+
+        }
     }
-}
 
