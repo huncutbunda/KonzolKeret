@@ -259,7 +259,7 @@
     {
         
         Console.SetCursorPosition(0, Console.WindowHeight - 2);
-        Console.Write("Enter the file name to save: ");
+        Console.Write("Fájl mentése: ");
         string fileName = Console.ReadLine();
         string filePath = fileName + ".txt";
 
