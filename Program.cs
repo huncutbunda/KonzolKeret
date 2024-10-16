@@ -1,5 +1,4 @@
 ﻿class Program
-
 {
     static int cursorX = 1;
     static int cursorY = 1;
@@ -56,6 +55,52 @@
         }
         while (key != ConsoleKey.Escape);
     }
+    static void MenuRajzolas(string[] opciok, int selectedOption, string kivalasztottSzoveg)
+    {
+        Console.Clear();
+
+        int consoleWidth = Console.WindowWidth;
+        int consoleHeight = Console.WindowHeight;
+        int width = 20;
+
+        int menuHeight = opciok.Length + 2;
+
+        int felsoresz = (consoleHeight / 2) - (menuHeight / 2);
+        int balresz = (consoleWidth / 2) - (width / 2);
+        Console.SetCursorPosition(balresz, felsoresz - 1);
+        Console.WriteLine("Menü (ENTER)");
+        Console.SetCursorPosition(balresz, felsoresz);
+        Console.WriteLine("+" + new string('-', width) + "+");
+
+        for (int i = 0; i < opciok.Length; i++)
+        {
+            string padding = opciok[i].PadLeft((width / 2) + (opciok[i].Length / 2)).PadRight(width);
+
+            Console.SetCursorPosition(balresz, felsoresz + 1 + i);
+
+
+            if (i == selectedOption)
+            {
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
+            }
+
+            Console.WriteLine("|" + padding + "|");
+            Console.ResetColor();
+        }
+
+        Console.SetCursorPosition(balresz, felsoresz + menuHeight - 1);
+        Console.WriteLine("+" + new string('-', width) + "+");
+
+        if (!string.IsNullOrEmpty(kivalasztottSzoveg))
+        {
+            Console.SetCursorPosition(balresz, felsoresz + menuHeight + 1);
+            Console.WriteLine("Kiválasztott opció: " + kivalasztottSzoveg);
+        }
+
+
+    }
+
 
     static void StartDrawingTool()
     {
@@ -66,8 +111,10 @@
 
         DrawFrame();
 
-        
+        bool isSpacebarPressed = false;
         bool exitDrawing = false;
+
+
 
 
         while (!exitDrawing)
@@ -94,6 +141,10 @@
 
                     case ConsoleKey.Escape:
                         exitDrawing = true;
+                        break;
+
+                    case ConsoleKey.Spacebar:
+                        isSpacebarPressed = true;
                         break;
 
 
@@ -128,7 +179,17 @@
                         break;
                 }
             }
+            if (isSpacebarPressed)
+            {
+                ColorCurrentPosition(currentDrawingChar, currentColor);
+                if (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Spacebar)
+                {
+                    isSpacebarPressed = false;
+                }
+            }
+
         }
+
     }
     static void DrawFrame()
     {
@@ -163,51 +224,15 @@
 
         Console.ResetColor();
     }
-
-    static void MenuRajzolas(string[] opciok, int selectedOption, string kivalasztottSzoveg)
+    static void ColorCurrentPosition(char drawChar, ConsoleColor color)
     {
-        Console.Clear();
-
-        int consoleWidth = Console.WindowWidth;
-        int consoleHeight = Console.WindowHeight;
-        int width = 20;
-
-        int menuHeight = opciok.Length + 2;
-
-        int felsoresz = (consoleHeight / 2) - (menuHeight / 2);
-        int balresz = (consoleWidth / 2) - (width / 2);
-        Console.SetCursorPosition(balresz, felsoresz - 1);
-        Console.WriteLine("Nyomj ENTER-t a kiválasztáshoz");
-        Console.SetCursorPosition(balresz, felsoresz);
-        Console.WriteLine("+" + new string('-', width) + "+");
-
-        for (int i = 0; i < opciok.Length; i++)
-        {
-            string padding = opciok[i].PadLeft((width / 2) + (opciok[i].Length / 2)).PadRight(width);
-
-            Console.SetCursorPosition(balresz, felsoresz + 1 + i);
-
-
-            if (i == selectedOption)
-            {
-                Console.BackgroundColor = ConsoleColor.Gray;
-                Console.ForegroundColor = ConsoleColor.Black;
-            }
-
-            Console.WriteLine("|" + padding + "|");
-            Console.ResetColor();
-        }
-
-        Console.SetCursorPosition(balresz, felsoresz + menuHeight - 1);
-        Console.WriteLine("+" + new string('-', width) + "+");
-
-        if (!string.IsNullOrEmpty(kivalasztottSzoveg))
-        {
-            Console.SetCursorPosition(balresz, felsoresz + menuHeight + 1);
-            Console.WriteLine("Kiválasztott opció: " + kivalasztottSzoveg);
-        }
-
-
-        }
+        Console.SetCursorPosition(cursorX, cursorY);
+        Console.ForegroundColor = color;
+        Console.Write(drawChar);
+        Console.ResetColor();
     }
+}
+
+    
+
 
