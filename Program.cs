@@ -254,6 +254,7 @@
     static void DeleteDrawing()
     {
         
+        
         string[] files = Directory.GetFiles(drawingsDirectory, "*.pwnd");
         if (files.Length == 0)
         {
