@@ -7,6 +7,7 @@
     static char[,] drawingGrid;
     static int consoleWidth;
     static int consoleHeight;
+    static string drawingsDirectory = "drawings";
 
 
     static void Main()
@@ -14,7 +15,10 @@
         string[] opciok = { "Create", "Edit", "Delete", "Escape" };
         int aktKivalasztas = 0;
         ConsoleKey key;
-
+        if (!Directory.Exists(drawingsDirectory))
+        {
+            Directory.CreateDirectory(drawingsDirectory);
+        }
         MenuRajzolas(opciok, aktKivalasztas, null);
         bool enter = false;
         do
@@ -54,6 +58,10 @@
                     {
 
                         StartDrawingTool();
+                    }
+                    else if (opciok[aktKivalasztas] == "Delete")
+                    {
+                        DeleteDrawing();
                     }
                     else if (opciok[aktKivalasztas] == "Escape")
                     {
@@ -215,6 +223,82 @@
         }
 
     }
+    static void SaveDrawingToFile()
+    {
+        
+        Console.SetCursorPosition(0, Console.WindowHeight - 2);
+        Console.Write("Fájl neve: ");
+        string fileName = Console.ReadLine();
+        SaveDrawingToFile(Path.Combine(drawingsDirectory, fileName + ".pwnd"));
+    }
+    static void SaveDrawingToFile(string filePath)
+    {
+        
+        using (StreamWriter writer = new StreamWriter(filePath))
+        {
+            for (int y = 1; y < Console.WindowHeight - 1; y++) 
+            {
+                for (int x = 1; x < Console.WindowWidth - 1; x++) 
+                {
+                    writer.Write(drawingGrid[x, y]);
+                }
+                writer.WriteLine(); 
+            }
+        }
+
+        
+        Console.SetCursorPosition(0, Console.WindowHeight - 1);
+        Console.WriteLine($"Drawing saved to {filePath}");
+    }
+
+    static void DeleteDrawing()
+    {
+        
+        string[] files = Directory.GetFiles(drawingsDirectory, "*.pwnd");
+        if (files.Length == 0)
+        {
+            Console.WriteLine("Nem talált rajz.");
+            Console.ReadKey();
+            return;
+        }
+
+        
+        Console.Clear();
+        Console.WriteLine("Válassz rajzot törölni:");
+        for (int i = 0; i < files.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}. {Path.GetFileName(files[i])}");
+        }
+
+        Console.Write("Rajzszám: ");
+        int selection = int.Parse(Console.ReadLine());
+
+        if (selection < 1 || selection > files.Length)
+        {
+            Console.WriteLine("Invalid.");
+            Console.ReadKey();
+            return;
+        }
+
+        
+        string filePath = files[selection - 1];
+        Console.WriteLine($"Biztos ki szeretnéd törölni '{Path.GetFileName(filePath)}'? (y/n)");
+        var confirmation = Console.ReadKey().Key;
+
+        if (confirmation == ConsoleKey.Y)
+        {
+            
+            File.Delete(filePath);
+            Console.WriteLine($"\n'{Path.GetFileName(filePath)}' törölve lett.");
+        }
+        else
+        {
+            Console.WriteLine("\nTörlési hiba.");
+        }
+
+        Console.ReadKey();
+    }
+
     static void DrawFrame()
     {
         Console.Clear();
@@ -255,31 +339,8 @@
         Console.Write(drawChar);
         Console.ResetColor();
     }
-    static void SaveDrawingToFile()
-    {
-        
-        Console.SetCursorPosition(0, Console.WindowHeight - 2);
-        Console.Write("Fájl mentése: ");
-        string fileName = Console.ReadLine();
-        string filePath = fileName + ".txt";
+    
 
-        
-        using (StreamWriter writer = new StreamWriter(filePath))
-        {
-            for (int y = 1; y < Console.WindowHeight - 1; y++) 
-            {
-                for (int x = 1; x < Console.WindowWidth - 1; x++) 
-                {
-                    writer.Write(drawingGrid[x, y]);
-                }
-                writer.WriteLine(); 
-            }
-        }
-
-        
-        Console.SetCursorPosition(0, Console.WindowHeight - 1);
-        Console.WriteLine($"Rajz így lett mentve: {filePath}");
-    }
 }
 
 
