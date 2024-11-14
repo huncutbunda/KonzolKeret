@@ -7,7 +7,7 @@
     static char[,] drawingGrid;
     static int consoleWidth;
     static int consoleHeight;
-    static string drawingsDirectory = "drawings";
+    static string drawingsDirectory = @"C:\Users\szabo.akos.csaba";
 
 
     static void Main()
