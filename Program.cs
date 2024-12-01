@@ -63,6 +63,10 @@
                     {
                         DeleteDrawing();
                     }
+                    else if (opciok[aktKivalasztas] == "Edit")
+                    {
+                        EditDrawing();
+                    }
                     else if (opciok[aktKivalasztas] == "Escape")
                     {
                         key = ConsoleKey.Escape;
@@ -249,6 +253,11 @@
         
         Console.SetCursorPosition(0, Console.WindowHeight - 1);
         Console.WriteLine($"Drawing saved to {filePath}");
+    }
+
+    static void EditDrawing()
+    {
+
     }
 
     static void DeleteDrawing()
