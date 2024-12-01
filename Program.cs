@@ -257,8 +257,155 @@
 
     static void EditDrawing()
     {
+        
+        string[] files = Directory.GetFiles(drawingsDirectory, "*.pwnd");
+        if (files.Length == 0)
+        {
+            Console.WriteLine("Nincsenek elérhető rajzok a szerkesztéshez.");
+            Console.ReadKey();
+            return;
+        }
 
+        Console.Clear();
+        Console.WriteLine("Válassz egy rajzot szerkeszteni:");
+        for (int i = 0; i < files.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}. {Path.GetFileName(files[i])}");
+        }
+
+        Console.Write("Rajzszám: ");
+        if (!int.TryParse(Console.ReadLine(), out int selection) || selection < 1 || selection > files.Length)
+        {
+            Console.WriteLine("Érvénytelen választás.");
+            Console.ReadKey();
+            return;
+        }
+
+        string filePath = files[selection - 1];
+
+        
+        LoadDrawingFromFile(filePath);
+
+        
+        Console.Clear();
+        DrawFrame();
+        bool exitDrawing = false;
+        bool isSpacebarPressed = false;
+
+        while (!exitDrawing)
+        {
+            if (Console.KeyAvailable)
+            {
+                var keyInfo = Console.ReadKey(true);
+
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        if (cursorY > 1) cursorY--;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        if (cursorY < Console.WindowHeight - 2) cursorY++;
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        if (cursorX > 1) cursorX--;
+                        break;
+                    case ConsoleKey.RightArrow:
+                        if (cursorX < Console.WindowWidth - 2) cursorX++;
+                        break;
+
+                    case ConsoleKey.Escape:
+                        exitDrawing = true;
+                        break;
+
+                    case ConsoleKey.Spacebar:
+                        isSpacebarPressed = true;
+                        break;
+
+                    case ConsoleKey.S:
+                        SaveDrawingToFile(filePath); 
+                        break;
+
+                    case ConsoleKey.D1:
+                        currentDrawingChar = '█';
+                        break;
+                    case ConsoleKey.D2:
+                        currentDrawingChar = '▓';
+                        break;
+                    case ConsoleKey.D3:
+                        currentDrawingChar = '▒';
+                        break;
+                    case ConsoleKey.D4:
+                        currentDrawingChar = '░';
+                        break;
+
+                    case ConsoleKey.D5:
+                        currentColor = ConsoleColor.Red;
+                        break;
+                    case ConsoleKey.D6:
+                        currentColor = ConsoleColor.Blue;
+                        break;
+                    case ConsoleKey.D7:
+                        currentColor = ConsoleColor.Green;
+                        break;
+                    case ConsoleKey.D8:
+                        currentColor = ConsoleColor.Yellow;
+                        break;
+                    case ConsoleKey.D9:
+                        currentColor = ConsoleColor.Cyan;
+                        break;
+                }
+            }
+
+            if (isSpacebarPressed)
+            {
+                ColorCurrentPosition(currentDrawingChar, currentColor);
+                if (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Spacebar)
+                {
+                    isSpacebarPressed = false;
+                }
+            }
+        }
     }
+
+    static void LoadDrawingFromFile(string filePath)
+    {
+        consoleWidth = Console.WindowWidth;
+        consoleHeight = Console.WindowHeight;
+
+        drawingGrid = new char[consoleWidth, consoleHeight];
+        for (int i = 0; i < consoleWidth; i++)
+        {
+            for (int j = 0; j < consoleHeight; j++)
+            {
+                drawingGrid[i, j] = ' ';
+            }
+        }
+
+        using (StreamReader reader = new StreamReader(filePath))
+        {
+            string line;
+            int y = 1;
+
+            while ((line = reader.ReadLine()) != null && y < consoleHeight - 1)
+            {
+                for (int x = 1; x < Math.Min(line.Length + 1, consoleWidth - 1); x++)
+                {
+                    drawingGrid[x, y] = line[x - 1];
+                }
+                y++;
+            }
+        }
+
+        for (int y = 1; y < Console.WindowHeight - 1; y++)
+        {
+            for (int x = 1; x < Console.WindowWidth - 1; x++)
+            {
+                Console.SetCursorPosition(x, y);
+                Console.Write(drawingGrid[x, y]);
+            }
+        }
+    }
+
 
     static void DeleteDrawing()
     {
